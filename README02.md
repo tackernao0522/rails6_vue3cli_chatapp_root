@@ -226,3 +226,125 @@ end
     }
 }
 ```
+
+## 3-3 コントローラの作成
+
++ `root $ docker compsose run --rm api rails g controller messages`を実行<br>
+
++ `api/app/controllers/messages_controller.rb`を編集<br>
+
+```rb:messages_controller.rb
+class MessagesController < ApplicationController
+  def index
+    messages = Message.all
+    messages_array = messages.map do |message|
+      id: message.id,
+      user_id: message.user.name,
+      content: message.content,
+      email: message.user.email,
+      created_at: message.created_at
+    end
+
+    render json: messages_array, status: 200
+  end
+end
+```
+
+下記のようなオブジェクトの配列が作成される<br>
+
+```:json
+[
+  {
+    "id": 1,
+    "user_id": 1,
+    "name": "Momoko",
+    "content": "こんにちは!",
+    "email": "momoko@test.com",
+    "created_at": "2021-05-12 21:59:59"
+  },
+  {
+    "id": 2,
+    "user_id": 2,
+    "name": "Hanako",
+    "content": "ヤッホー!",
+    "email": "hanako@test.com",
+    "created_at": "2021-06-30 21:59:59"
+  }
+]
+```
+
++ `api/config/routes.rb`<br>
+
+```rb:routes.rb
+class MessagesController < ApplicationController
+  def index
+    messages = Message.all
+    messages_array = messages.map do |message|
+      {
+        id: message.id,
+        user_id: message.user.id,
+        name: message.user.name,
+        content: message.content,
+        email: message.user.email,
+        created_at: message.created_at
+      }
+    end
+
+    render json: messages_array, status: 200
+  end
+end
+```
+
+## Postmanで確認
+
++ `POSTMAN(GET) localhost:3000//messages`を入力して`Send`<br>
+
+```:json
+[]
+```
+
+## Seedで初期データを作る
+
++ `api/db/seeds.rb`を編集<br>
+
+```rb:seeds.rb
+3.times do |number|
+  Message.create(content: "#{number}番目のメッセージです！", user_id: User.first.id)
+  puts "#{number}番目のメッセージを作成しました"
+end
+
+puts "メッセージの作成が完了しました"
+```
+
++ `root docker compose run --rm api rails db:seed`を実行<br>
+
++ `POSTMAN(GET) localhost:3000//messages`を入力して`Send`<br>
+
+```:json
+[
+    {
+        "id": 1,
+        "user_id": 1,
+        "name": "takaki",
+        "content": "0番目のメッセージです！",
+        "email": "takaki55730317@gmail.com",
+        "created_at": "2022-05-15T13:12:13.623Z"
+    },
+    {
+        "id": 2,
+        "user_id": 1,
+        "name": "takaki",
+        "content": "1番目のメッセージです！",
+        "email": "takaki55730317@gmail.com",
+        "created_at": "2022-05-15T13:12:13.680Z"
+    },
+    {
+        "id": 3,
+        "user_id": 1,
+        "name": "takaki",
+        "content": "2番目のメッセージです！",
+        "email": "takaki55730317@gmail.com",
+        "created_at": "2022-05-15T13:12:13.710Z"
+    }
+]
+```
