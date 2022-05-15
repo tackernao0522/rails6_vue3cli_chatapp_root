@@ -1,20 +1,21 @@
                                Prefix Verb   URI Pattern                                                                              Controller#Action
-                     new_user_session GET    /auth/sign_in(.:format)                                                                  devise_token_auth/sessions#new
-                         user_session POST   /auth/sign_in(.:format)                                                                  devise_token_auth/sessions#create
-                 destroy_user_session DELETE /auth/sign_out(.:format)                                                                 devise_token_auth/sessions#destroy
-                    new_user_password GET    /auth/password/new(.:format)                                                             devise_token_auth/passwords#new
-                   edit_user_password GET    /auth/password/edit(.:format)                                                            devise_token_auth/passwords#edit
-                        user_password PATCH  /auth/password(.:format)                                                                 devise_token_auth/passwords#update
-                                      PUT    /auth/password(.:format)                                                                 devise_token_auth/passwords#update
-                                      POST   /auth/password(.:format)                                                                 devise_token_auth/passwords#create
-             cancel_user_registration GET    /auth/cancel(.:format)                                                                   auth/registrations#cancel
-                new_user_registration GET    /auth/sign_up(.:format)                                                                  auth/registrations#new
-               edit_user_registration GET    /auth/edit(.:format)                                                                     auth/registrations#edit
-                    user_registration PATCH  /auth(.:format)                                                                          auth/registrations#update
-                                      PUT    /auth(.:format)                                                                          auth/registrations#update
-                                      DELETE /auth(.:format)                                                                          auth/registrations#destroy
-                                      POST   /auth(.:format)                                                                          auth/registrations#create
+                     new_user_session GET    /auth/sign_in(.:format)                                                                  devise_token_auth/sessions#new {:format=>:json}
+                         user_session POST   /auth/sign_in(.:format)                                                                  devise_token_auth/sessions#create {:format=>:json}
+                 destroy_user_session DELETE /auth/sign_out(.:format)                                                                 devise_token_auth/sessions#destroy {:format=>:json}
+                    new_user_password GET    /auth/password/new(.:format)                                                             devise_token_auth/passwords#new {:format=>:json}
+                   edit_user_password GET    /auth/password/edit(.:format)                                                            devise_token_auth/passwords#edit {:format=>:json}
+                        user_password PATCH  /auth/password(.:format)                                                                 devise_token_auth/passwords#update {:format=>:json}
+                                      PUT    /auth/password(.:format)                                                                 devise_token_auth/passwords#update {:format=>:json}
+                                      POST   /auth/password(.:format)                                                                 devise_token_auth/passwords#create {:format=>:json}
+             cancel_user_registration GET    /auth/cancel(.:format)                                                                   auth/registrations#cancel {:format=>:json}
+                new_user_registration GET    /auth/sign_up(.:format)                                                                  auth/registrations#new {:format=>:json}
+               edit_user_registration GET    /auth/edit(.:format)                                                                     auth/registrations#edit {:format=>:json}
+                    user_registration PATCH  /auth(.:format)                                                                          auth/registrations#update {:format=>:json}
+                                      PUT    /auth(.:format)                                                                          auth/registrations#update {:format=>:json}
+                                      DELETE /auth(.:format)                                                                          auth/registrations#destroy {:format=>:json}
+                                      POST   /auth(.:format)                                                                          auth/registrations#create {:format=>:json}
                   auth_validate_token GET    /auth/validate_token(.:format)                                                           devise_token_auth/token_validations#validate_token
+                             messages GET    /messages(.:format)                                                                      messages#index {:format=>:json}
         rails_postmark_inbound_emails POST   /rails/action_mailbox/postmark/inbound_emails(.:format)                                  action_mailbox/ingresses/postmark/inbound_emails#create
            rails_relay_inbound_emails POST   /rails/action_mailbox/relay/inbound_emails(.:format)                                     action_mailbox/ingresses/relay/inbound_emails#create
         rails_sendgrid_inbound_emails POST   /rails/action_mailbox/sendgrid/inbound_emails(.:format)                                  action_mailbox/ingresses/sendgrid/inbound_emails#create
