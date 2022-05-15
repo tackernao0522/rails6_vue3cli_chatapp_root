@@ -116,3 +116,113 @@ database: app_development
    up     20220515092932  Devise token auth create users
    up     20220515113850  Create messages
 ```
+
+# 3-2 モデルの設定をする
+
++ `api/app/models/message.rb`を編集<br>
+
+```rb:message.rb
+class Message < ApplicationRecord
+  belongs_to :user
+end
+```
+
++ `api/app/models/user.rb`を編集<br>
+
+```rb:user.rb
+# frozen_string_literal: true
+
+class User < ActiveRecord::Base
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+  include DeviseTokenAuth::Concerns::User
+
+  has_many :messages # 追加
+end
+```
+
+## バリデーションの設定
+
++ `api/app/models/message.rb`を編集<br>
+
+```rb:message.rb
+class Message < ApplicationRecord
+  belongs_to :user
+
+  validates :content, presence: true
+end
+```
+
++ `api/app/models/user.rb`を編集<br>
+
+```rb:user.rb
+# frozen_string_literal: true
+
+class User < ActiveRecord::Base
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+  devise :database_authenticatable, :registerable,
+         :recoverable, :rememberable, :validatable
+  include DeviseTokenAuth::Concerns::User
+
+  has_many :messages
+
+  # 追加
+  validates :name, presence: true
+  validates :name, length: { maximum: 30 }
+end
+```
+
+## Postmanでバリデーションのテスト
+
++ `POSTMAN(POST) http://localhost:3000/auth`を入力<br>
+
++ `Body`タブを選択<br>
+
++ `form-data`を選択<br>
+
++ `KEY`に `name`, `email`, `password`, `password_confirmation`を入力<br>
+
++ `VALUE`に 30文字以上のnameを入力、 emailを新規で入力、 passwordを入力、password_confirmationを入力<br>
+
+```:json
+{
+    "status": "error",
+    "data": {
+        "id": null,
+        "provider": "email",
+        "uid": "",
+        "name": "testtesttesttesttesttesttesttesttesttesttesttest",
+        "email": "cheap_trick_magic@yahoo.co.jp",
+        "created_at": null,
+        "updated_at": null
+    },
+    "errors": {
+        "name": [
+            "is too long (maximum is 30 characters)"
+        ],
+        "full_messages": [
+            "Name is too long (maximum is 30 characters)"
+        ]
+    }
+}
+```
+
++ `name`を30文字以内で登録すると<br>
+
+```:json
+{
+    "status": "success",
+    "data": {
+        "id": 2,
+        "provider": "email",
+        "uid": "cheap_trick_magic@yahoo.co.jp",
+        "name": "naomi",
+        "email": "cheap_trick_magic@yahoo.co.jp",
+        "created_at": "2022-05-15T12:06:24.722Z",
+        "updated_at": "2022-05-15T12:06:24.883Z"
+    }
+}
+```
