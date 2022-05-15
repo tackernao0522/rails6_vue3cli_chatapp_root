@@ -654,7 +654,7 @@ end
 ```rb:routes.rb
 Rails.application.routes.draw do
   mount_devise_token_auth_for 'User', at: 'auth', controllers: {
-    registrations: 'auth/registraions'
+    registrations: 'auth/registrations'
   }
 end
 ```
@@ -666,7 +666,7 @@ end
 + `api/app/controllers/auth/registrations_controller.rb`を編集<br>
 
 ```rb:registrations_controller.rb
-class Auth::RegistrationsController < ApplicationController
+class Auth::RegistrationsController < DeviseTokenAuth::RegistrationsController
 
   private
 

@@ -7,13 +7,13 @@
                         user_password PATCH  /auth/password(.:format)                                                                 devise_token_auth/passwords#update
                                       PUT    /auth/password(.:format)                                                                 devise_token_auth/passwords#update
                                       POST   /auth/password(.:format)                                                                 devise_token_auth/passwords#create
-             cancel_user_registration GET    /auth/cancel(.:format)                                                                   auth/registraions#cancel
-                new_user_registration GET    /auth/sign_up(.:format)                                                                  auth/registraions#new
-               edit_user_registration GET    /auth/edit(.:format)                                                                     auth/registraions#edit
-                    user_registration PATCH  /auth(.:format)                                                                          auth/registraions#update
-                                      PUT    /auth(.:format)                                                                          auth/registraions#update
-                                      DELETE /auth(.:format)                                                                          auth/registraions#destroy
-                                      POST   /auth(.:format)                                                                          auth/registraions#create
+             cancel_user_registration GET    /auth/cancel(.:format)                                                                   auth/registrations#cancel
+                new_user_registration GET    /auth/sign_up(.:format)                                                                  auth/registrations#new
+               edit_user_registration GET    /auth/edit(.:format)                                                                     auth/registrations#edit
+                    user_registration PATCH  /auth(.:format)                                                                          auth/registrations#update
+                                      PUT    /auth(.:format)                                                                          auth/registrations#update
+                                      DELETE /auth(.:format)                                                                          auth/registrations#destroy
+                                      POST   /auth(.:format)                                                                          auth/registrations#create
                   auth_validate_token GET    /auth/validate_token(.:format)                                                           devise_token_auth/token_validations#validate_token
         rails_postmark_inbound_emails POST   /rails/action_mailbox/postmark/inbound_emails(.:format)                                  action_mailbox/ingresses/postmark/inbound_emails#create
            rails_relay_inbound_emails POST   /rails/action_mailbox/relay/inbound_emails(.:format)                                     action_mailbox/ingresses/relay/inbound_emails#create
