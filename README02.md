@@ -85,3 +85,34 @@
     "success": true
 }
 ```
+
+# 3-1 テーブルとモデルを作成
+
++ `root $ docker compose run --rm api rails g model message`を実行<br>
+
++ `api/db/migrate/create_messages.rb`を編集<br>
+
+```rb:create_messages.rb
+class CreateMessages < ActiveRecord::Migration[6.0]
+  def change
+    create_table :messages do |t|
+      t.references :user # アソシエーション user_idカラムが作成される
+      t.string :content
+      t.timestamps
+    end
+  end
+end
+```
+
++ `root $ docker compose run --rm api rails db:migrate`を実行<br>
+
++ `root $ docker compose run --rm api rails db:migrate:status`を実行して確認してみる<br>
+
+```:terminal
+database: app_development
+
+ Status   Migration ID    Migration Name
+--------------------------------------------------
+   up     20220515092932  Devise token auth create users
+   up     20220515113850  Create messages
+```
