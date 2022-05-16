@@ -348,3 +348,97 @@ puts "メッセージの作成が完了しました"
     }
 ]
 ```
+
+# 3-4 認証を設定する
+
++ `api/app/controllers/messages_controller.rb`を編集<br>
+
+```rb:messages_controller.rb
+class MessagesController < ApplicationController
+  # indexメソッドのみauthenticate_user!を実行する 認証失敗時やエラー時はindexメソッドは実行されない
+  before_action :authenticate_user!, only: ["index"]
+
+  def index
+    messages = Message.all
+    messages_array = messages.map do |message|
+      {
+        id: message.id,
+        user_id: message.user.id,
+        name: message.user.name,
+        content: message.content,
+        email: message.user.email,
+        created_at: message.created_at
+      }
+    end
+
+    render json: messages_array, status: 200
+  end
+end
+```
+
+## Postmanで確認
+
++ `POSTMAN(GET) localhost:3000/messages`を未ログイン状態で`Send`してみる<br>
+
+```:json
+{
+    "errors": [
+        "You need to sign in or sign up before continuing."
+    ]
+}
+```
+
+## 認証情報を取得するためにログインをする
+
++ `Postman(POST) localhost:3000/auth/sign_in`を入力<br>
+
++ `Body`を選択<br>
+
++ `form-data`に`email`と`password`を入れて`Send`<br>
+
+```:json
+{
+    "data": {
+        "id": 1,
+        "email": "takaki55730317@gmail.com",
+        "provider": "email",
+        "name": "takaki",
+        "uid": "takaki55730317@gmail.com"
+    }
+}
+```
+
++ 下部の`access-token`, `client`, `uid`の値を使う<br>
+
++ `Postman(GET) localhost:3000/messages`を入力<br>
+
++ `Body`タブを選択し、`form-data`にそれぞれの`Key`と`Value`を入力して`Send`してみる<br>
+
+```:json
+[
+    {
+        "id": 1,
+        "user_id": 1,
+        "name": "takaki",
+        "content": "0番目のメッセージです！",
+        "email": "takaki55730317@gmail.com",
+        "created_at": "2022-05-15T13:12:13.623Z"
+    },
+    {
+        "id": 2,
+        "user_id": 1,
+        "name": "takaki",
+        "content": "1番目のメッセージです！",
+        "email": "takaki55730317@gmail.com",
+        "created_at": "2022-05-15T13:12:13.680Z"
+    },
+    {
+        "id": 3,
+        "user_id": 1,
+        "name": "takaki",
+        "content": "2番目のメッセージです！",
+        "email": "takaki55730317@gmail.com",
+        "created_at": "2022-05-15T13:12:13.710Z"
+    }
+]
+```
