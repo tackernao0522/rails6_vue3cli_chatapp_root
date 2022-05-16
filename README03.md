@@ -92,3 +92,88 @@ class Message < ApplicationRecord
   validates :content, presence: true
 end
 ```
+
+# 4-2 Likesコントローラを作成する(全編)
+
++ `root $ docker compose run --rm api rails g controller likes`を実行<br>
+
++ `api/app/controllers/likes_controller.rb`を編集<br>
+
+```rb:likes_controller.rb
+class LikesController < ApplicationController
+  before_action :authenticate_user!, only: ['create']
+
+  def create
+    like = Like.new(message_id: params[:id], user_id: current_user.id)
+
+    if like.save
+      render json: { id: like.id, email: current_user.email, message: '成功しました' }, status: 200
+    else
+      render json: { message: '保存できませんでした', errors: like.errors.messages }, status: 400
+    end
+  end
+end
+```
+
+## ルートを設定する
+
++ `config/routes.rb`を編集<br>
+
+```rb:routes.rb
+Rails.application.routes.draw do
+  mount_devise_token_auth_for 'User', at: 'auth', controllers: {
+    registrations: 'auth/registrations'
+  }
+
+  resources :messages, only: ['index'] do
+    member do
+      resources :likes, only: ['create']
+    end
+  end
+end
+```
+
+`likes POST   /messages/:id/likes(.:format) likes#create`<br>
+
+## Postmanでテスト
+
++ まずログインしている状態にする<br>
+
++ `POSTMAN(POST) localhost:3000/messages/1/likes`を入力<br>
+
++ `Body`タブを選択して`form-data`を選択して `access-token`, `client`, `uid`を入れて`Send`する<br>
+
+```:json
+{
+    "id": 1,
+    "email": "takaki55730317@gmail.com",
+    "message": "成功しました"
+}
+```
+
++ `POSTMAN(POST) localhost:3000/messages/99999/likes`を入力<br>
+
++ `Body`タブを選択して`form-data`を選択して `access-token`, `client`, `uid`を入れて`Send`する<br>
+
+```:json
+{
+    "message": "保存できませんでした",
+    "errors": {
+        "message": [
+            "must exist"
+        ]
+    }
+}
+```
+
++ `POSTMAN(POST) localhost:3000/messages/2/likes`を入力<br>
+
++ `Body`タブを選択して`form-data`を選択して `access-token`, `client`, `uid`を入れて`Send`する<br>
+
+```:json
+{
+    "id": 2,
+    "email": "takaki55730317@gmail.com",
+    "message": "成功しました"
+}
+```
