@@ -327,3 +327,34 @@ end
     }
 ]
 ```
+
+# 5-1 リアルタイムチャット機能を実装する
+
+## Action Cableを設定する
+
++ `root $ docker compose run --rm api rails g channel room`を実行<br>
+
++ `api/app/channels/room_channel.rb`を編集<br>
+
+```rb:room_channel.rb
+class RoomChannel < ApplicationCable::Channel
+  def subscribed
+    stream_from 'room_channel'
+
+  def unsubscribed
+    # Any cleanup needed when channel is unsubscribed
+  end
+
+  def receive(data)
+    user = User.find_by(email: data['email'])
+
+    if message = Message.create(content: data['message'], user_id: user.id)
+      ActionCable.server.bloadcast('room_channel', {
+        message: data['message'],
+        name: user.name,
+        created_at: message.created_at
+      })
+    end
+  end
+end
+```
