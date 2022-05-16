@@ -53,6 +53,6 @@ services:
     volumes:
       - "./front:/$WORKDIR"
     ports:
-      - "$FRONT_PORT:8080"
+      - "$FRONT_PORT:3000"
     depends_on:
       - api
