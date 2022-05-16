@@ -45,11 +45,11 @@ export default router
 
 ## ウェルカムページを作成する
 
-+ `front $ mkdir src/views && touch $_/Welcome.vue`を実行<br>
++ `front $ mkdir src/views && touch $_/WelcomePage.vue`を実行<br>
 
-+ `front/src/views/Welcome.vue`を編集<br>
++ `front/src/views/WelcomePage.vue`を編集<br>
 
-```vue:Welcome.vue
+```vue:WelcomePage.vue
 <template>
   <div>こんにちは</div>
 </template>
@@ -69,13 +69,13 @@ export default {
 
 ```js:index.js
 import { createRouter, createWebHistory } from 'vue-router'
-import Welcome from '../views/Welcome'
+import WelcomePage from '../views/WelcomePage'
 
 const routes = [
   {
     path: '/',
     name: 'Welcome',
-    component: Welcome
+    component: WelcomePage
   }
 ]
 
@@ -91,9 +91,9 @@ export default router
 
 + localhost:8080 にアクセスして表示されればOK<br>
 
-+ `front/src/views/Welcome.vue`を編集<br>
++ `front/src/views/WelcomePage.vue`を編集<br>
 
-```vue:Welcome.vue
+```vue:WelcomePage.vue
 <template>
   <h1>{{ title }}</h1>
 </template>
@@ -112,9 +112,9 @@ export default {
 </style>
 ```
 
-+ `front/src/Welcome.vue`を再編集<br>
++ `front/src/WelcomePage.vue`を再編集<br>
 
-```vue:Welcome.vue
+```vue:WelcomePage.vue
 <template>
   <h1>{{ title }}</h1>
   <p>{{ subtitle }}</p>
@@ -137,9 +137,9 @@ export default {
 
 ## v-if ディレクティブを使ってみる
 
-+ `front/src/views/Welcome.vue`を編集<br>
++ `front/src/views/WelcomePage.vue`を編集<br>
 
-```vue:Welcome.vue
+```vue:WelcomePage.vue
 <template>
   <h1>{{ title }}</h1>
   <p v-if="false">{{ subtitle }}</p>
@@ -160,9 +160,9 @@ export default {
 </style>
 ```
 
-+ `front/src/views/Welcome.vue`を編集<br>
++ `front/src/views/WelcomePage.vue`を編集<br>
 
-```vue:Welcome.vue
+```vue:WelcomePage.vue
 <template>
   <h1>{{ title }}</h1>
   <p v-if="isEnablesd">{{ subtitle }}</p>
@@ -186,9 +186,9 @@ export default {
 
 ## クリックイベントとメソッドオプションを使ってみる
 
-+ `front/src/views/Welcome.vue`を編集<br>
++ `front/src/views/WelcomePage.vue`を編集<br>
 
-```vue:Welcome.vue
+```vue:WelcomePage.vue
 <template>
   <h1>{{ title }}</h1>
   <p v-if="isEnablesd">{{ subtitle }}</p>
@@ -218,9 +218,9 @@ export default {
 
 ## dblclick イベントを使ってみる(ダブルクリックで変わる)
 
-+ `front/src/views/Welcome.vue`を編集<br>
++ `front/src/views/WelcomePage.vue`を編集<br>
 
-```vue:Welcome.vue
+```vue:WelcomePage.vue
 <template>
   <h1>{{ title }}</h1>
   <p v-if="isEnablesd">{{ subtitle }}</p>
@@ -250,9 +250,9 @@ export default {
 
 ## computed プロパティを使ってみる
 
-+ `front/src/views/Welcome.vue`を編集<br>
++ `front/src/views/WelcomePage.vue`を編集<br>
 
-```vue:Welcome.vue
+```vue:WelcomePage.vue
 <template>
   <h1>{{ title }}</h1>
   <p v-if="isEnabled">{{ subtitle }}</p>
