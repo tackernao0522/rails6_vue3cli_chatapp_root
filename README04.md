@@ -289,3 +289,317 @@ export default {
 <style>
 </style>
 ```
+
+# 6-4 Vue.jsの基本的な使い方を学ぼう (後編)
+
++ `front $ mkdir src/compontns && touch $_/TestComponent.vue`を実行<br>
+
++ `src/components/TestComponent.vue`を編集<br>
+
+```vue:TestComponent.vue
+<template>
+  <div>
+    これはコンポーネントから表示されています。
+  </div>
+</template>
+
+<script>
+export default {
+
+}
+</script>
+
+<style>
+
+</style>
+```
+
++ `front/src/views/WelcomePage.vue`を編集<br>
+
+```vue:WelcomePage.vue
+<template>
+  <h1>{{ title }}</h1>
+  <test-component />
+</template>
+
+<script>
+import TestComponent from '../compontns/TestComponent.vue';
+export default {
+  components: { TestComponent },
+  data() {
+    return {
+      title: "初めてのVue.jsアプリです!",
+      subtitle: "ようこそ",
+      isEnabled: true,
+    };
+  },
+  methods: {
+    toggle() {
+      this.isEnabled = !this.isEnabled;
+    },
+  },
+  computed: {
+    text() {
+      if (this.isEnabled) {
+        return "こんにちは!";
+      } else {
+        return "さよなら!";
+      }
+    },
+  },
+};
+</script>
+
+<style>
+</style>
+```
+
+## コンポーネントにデータを渡す
+
++ `front/src/views/WelcomePage.vue`を編集<br>
+
+```vue:WelcomePage.vue
+<template>
+  <h1>{{ title }}</h1>
+  <test-component message="コンポーネントにデータが渡されています" />
+</template>
+
+<script>
+import TestComponent from '../compontns/TestComponent.vue';
+export default {
+  components: { TestComponent },
+  data() {
+    return {
+      title: "初めてのVue.jsアプリです!",
+      subtitle: "ようこそ",
+      isEnabled: true,
+    };
+  },
+  methods: {
+    toggle() {
+      this.isEnabled = !this.isEnabled;
+    },
+  },
+  computed: {
+    text() {
+      if (this.isEnabled) {
+        return "こんにちは!";
+      } else {
+        return "さよなら!";
+      }
+    },
+  },
+};
+</script>
+
+<style>
+</style>
+```
+
++ `front/src/components/TestComponents/TestComponent.vue`を編集<br>
+
+```vue:TestComponent.vue
+<template>
+  <div>
+    これはコンポーネントから表示されています。
+    # 追記
+    <p>{{ message }}</p>
+  </div>
+</template>
+
+<script>
+export default {
+  props: ["message"],
+};
+</script>
+
+<style>
+</style>
+```
+
+## 値が変わるデータを子コンポーネントに渡す
+
++ `front/src/views/WelcomePage.vue`を編集<br>
+
+```vue:WelcomePage.vue
+<template>
+  <h1>{{ title }}</h1>
+  # 編集
+  <test-component :isEnabled="isEnabled" message="コンポーネントにデータが渡されています。" />
+</template>
+
+<script>
+import TestComponent from '../compontns/TestComponent.vue';
+export default {
+  components: { TestComponent },
+  data() {
+    return {
+      title: "初めてのVue.jsアプリです!",
+      subtitle: "ようこそ",
+      isEnabled: true,
+    };
+  },
+  methods: {
+    toggle() {
+      this.isEnabled = !this.isEnabled;
+    },
+  },
+  computed: {
+    text() {
+      if (this.isEnabled) {
+        return "こんにちは!";
+      } else {
+        return "さよなら!";
+      }
+    },
+  },
+};
+</script>
+
+<style>
+</style>
+```
+
++ `front/src/components/TestComponent.vue`を編集<br>
+
+```vue:TestComponent.vue
+<template>
+  <div>
+    これはコンポーネントから表示されています。
+    <p>{{ message }}</p>
+    # 追加
+    <p>{{ isEnabled }}</p>
+  </div>
+</template>
+
+<script>
+export default {
+  # 編集
+  props: ["message", "isEnabled"],
+};
+</script>
+
+<style>
+</style>
+```
+
+## 子コンポーネントから親コンポーネントのメソッドを実行する
+
++ `front/src/components/TestComponent.vue`を編集<br>
+
+```vue:TestComponent.vue
+<template>
+  <div>
+    これはコンポーネントから表示されています。
+    <p>{{ message }}</p>
+    # 編集
+    <button @click="onClick">親メソッドを実行するボタン</button>
+  </div>
+</template>
+
+<script>
+export default {
+  props: ["message"],
+  methods: {
+    # 追加
+    onClick() {
+      this.$emit("toggle");
+    },
+  },
+};
+</script>
+
+<style>
+</style>
+```
+
++ `front/src/views/WelcomePage.vue`を編集<br>
+
+```vue:WelcomePage.vue
+<template>
+  <h1>{{ title }}</h1>
+  # 編集
+  <test-component @toggle="toggle" message="コンポーネントにデータが渡されています。" />
+  # 追加
+  <p v-if="isEnabled">こんにちは</p>
+</template>
+
+<script>
+import TestComponent from '../compontns/TestComponent.vue';
+export default {
+  components: { TestComponent },
+  data() {
+    return {
+      title: "初めてのVue.jsアプリです!",
+      subtitle: "ようこそ",
+      isEnabled: true,
+    };
+  },
+  methods: {
+    toggle() {
+      this.isEnabled = !this.isEnabled;
+    },
+  },
+  computed: {
+    text() {
+      if (this.isEnabled) {
+        return "こんにちは!";
+      } else {
+        return "さよなら!";
+      }
+    },
+  },
+};
+</script>
+
+<style>
+</style>
+```
+
+## スタイルを適用する
+
++ `front/views/WelcomePage.vue`を編集<br>
+
+```vue:WelcomePage.vue
+<template>
+  <h1>{{ title }}</h1>
+  <test-component @toggle="toggle" message="コンポーネントにデータが渡されています。" />
+  <p v-if="isEnabled">こんにちは</p>
+</template>
+
+<script>
+import TestComponent from '../compontns/TestComponent.vue';
+export default {
+  components: { TestComponent },
+  data() {
+    return {
+      title: "初めてのVue.jsアプリです!",
+      subtitle: "ようこそ",
+      isEnabled: true,
+    };
+  },
+  methods: {
+    toggle() {
+      this.isEnabled = !this.isEnabled;
+    },
+  },
+  computed: {
+    text() {
+      if (this.isEnabled) {
+        return "こんにちは!";
+      } else {
+        return "さよなら!";
+      }
+    },
+  },
+};
+</script>
+
+# 編集
+<style scoped>
+  p {
+    font-size: 20px;
+    color: red;
+  }
+</style>
+```
