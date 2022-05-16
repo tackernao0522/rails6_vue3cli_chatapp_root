@@ -186,7 +186,7 @@ end
 
 ```rb:likes_controller.rb
 class LikesController < ApplicationController
-  before_action :authenticate_user!, only: ['create']
+  before_action :authenticate_user!, only: ['create', 'destory']
 
   def create
     like = Like.new(message_id: params[:id], user_id: current_user.id)
@@ -237,4 +237,93 @@ like DELETE  /likes/:id(.:format)           likes#destroy
     "email": "takaki55730317@gmail.com",
     "message": "削除に成功しました"
 }
+```
+
+## 4-4 コントローラを作成する(後編)
+
+### messagesコントローラにいいねの情報を追加する
+
++ `api/app/controllers/messages_controller.rb`を編集<br>
+
+```rb:messages_controller.rb
+class MessagesController < ApplicationController
+  before_action :authenticate_user!, only: ["index"]
+
+  def index
+    messages = Message.all
+    messages_array = messages.map do |message|
+      {
+        id: message.id,
+        user_id: message.user.id,
+        name: message.user.name,
+        content: message.content,
+        email: message.user.email,
+        created_at: message.created_at,
+        likes: message.likes.map { |like| { id: like.id, email: like.user.email } }
+      }
+    end
+
+    render json: messages_array, status: 200
+  end
+end
+```
+
+※ likes: message.likes.map { ... }は、messageに紐づくlikesレコードを取得し、idとemailの名前と値をもつオブジェクトを作成している<br>
+
+## Postmanでテストする
+
++ ログイン状態にする<br>
+
++ `POSTMAN(GET) localhost:3000/messages`を入力する<br>
+
++ `Body`タブを選択して`form-data`に`access-token`と`client`と`uid`を設定して`Send`する<br>
+
+```:json
+[
+    {
+        "id": 1,
+        "user_id": 1,
+        "name": "takaki",
+        "content": "0番目のメッセージです！",
+        "email": "takaki55730317@gmail.com",
+        "created_at": "2022-05-15T13:12:13.623Z",
+        "likes": [
+            {
+                "id": 4,
+                "email": "takaki55730317@gmail.com"
+            },
+            {
+                "id": 5,
+                "email": "takaki55730317@gmail.com"
+            }
+        ]
+    },
+    {
+        "id": 2,
+        "user_id": 1,
+        "name": "takaki",
+        "content": "1番目のメッセージです！",
+        "email": "takaki55730317@gmail.com",
+        "created_at": "2022-05-15T13:12:13.680Z",
+        "likes": [
+            {
+                "id": 2,
+                "email": "takaki55730317@gmail.com"
+            },
+            {
+                "id": 3,
+                "email": "takaki55730317@gmail.com"
+            }
+        ]
+    },
+    {
+        "id": 3,
+        "user_id": 1,
+        "name": "takaki",
+        "content": "2番目のメッセージです！",
+        "email": "takaki55730317@gmail.com",
+        "created_at": "2022-05-15T13:12:13.710Z",
+        "likes": []
+    }
+]
 ```
