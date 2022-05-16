@@ -177,3 +177,64 @@ end
     "message": "成功しました"
 }
 ```
+
+## 4-3 likesコントローラを作成する(中編)
+
+### Destoryメソッドを実装する
+
+`api/app/controllers/likes_controller.rb`を編集<br>
+
+```rb:likes_controller.rb
+class LikesController < ApplicationController
+  before_action :authenticate_user!, only: ['create']
+
+  def create
+    like = Like.new(message_id: params[:id], user_id: current_user.id)
+
+    if like.save
+      render json: { id: like.id, email: current_user.email, message: '成功しました' }, status: 200
+    else
+      render json: { message: '保存できませんでした', errors: like.errors.messages }, status: 400
+    end
+  end
+
+  def destroy
+    like = Like.find(params[:id])
+
+    if like.destroy
+      render json: { id: like.id, email: like.user.email, message: '削除に成功しました' }, status: 200
+    else
+      render json: { message: '削除できませんでした', errors: like.errors.messages }, status: 400
+    end
+  end
+end
+```
+
+## ルートを設定する
+
++ `api/config/routes.rb`を編集<br>
+
+```rb:routes.rb
+
+```
+
+```
+likes POST   /messages/:id/likes(.:format)  likes#create
+messages GET /messages(.:format)            messages#index
+like DELETE  /likes/:id(.:format)           likes#destroy
+````
+
+## Postmanでテスト
++ まずログイン状態にする<br>
+
++ `POSTMAN(DELETE) localhost:3000/likes/1`入力する<br>
+
++ `Body`タブを選択して`form-data`に`access-token`, `client`, `uid`を設定して`Send`する<br>
+
+```:json
+{
+    "id": 1,
+    "email": "takaki55730317@gmail.com",
+    "message": "削除に成功しました"
+}
+```
