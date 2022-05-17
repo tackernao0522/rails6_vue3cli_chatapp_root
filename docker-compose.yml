@@ -7,7 +7,6 @@ services:
   db:
     # ベースイメージを定義
     image: postgres:13.1-alpine
-    # command: postgres -c stats_temp_directory=/tmp
     # 環境変数を定義
     environment:
       # OSのタイムゾーン
