@@ -410,4 +410,46 @@ TEST
 
 + `/app # exit`でコンテナから抜ける<br>
 
+## Rails HerokuCLI-manifestを使ってアプリを構築する 〜デプロイ準備編〜
 
++ `root $ heroku login`を実行<br>
+
++ `cd api`を実行<br>
+
++ `api heroku create rails-vue3cli-api --manifest`を実行<br>
+
+* `api heroku open`を実行<br>
+
++ Herokuのダッシュボードを開く<br>
+
++ add-onsが設定されているか確認する<br>
+
++ `Settings`の`Config Vars`の`Reveal Config Vars`をクリックする(5 個の値が設定されていれば OK)<br>
+
++ `api $ heroku stack`を実行<br>
+
+```:terminal
+=== ⬢ rails-vue3cli-api Available Stacks
+* container
+  heroku-18
+  heroku-20
+```
+
++ `api $ git push heroku main`を実行<br>
+
++ `api $ pbcopy < config/master.key`を実行する<br>
+
++ `api $ heroku config:set RAILS_MASTER_KEY=dbd7ff5441b828998b19239769b0f033`を実行<br>
+
++ `api $ heroku config`を実行して確認<br>
+
+```:terminal
+DATABASE_URL:             postgres://lkcemzvldthfud:bf294aed21561cfe6041e52a76a33c00f69c7aefee890efdd544e46e121584c9@ec2-54-86-224-85.compute-1.amazonaws.com:5432/daon5gds3o4te4
+RACK_ENV:                 production
+RAILS_ENV:                production
+RAILS_LOG_TO_STDOUT:      enabled
+RAILS_MASTER_KEY:         dbd7ff5441b828998b19239769b0f033
+RAILS_SERVE_STATIC_FILES: enabled
+```
+
++ `api $ heroku run rails db:migrate`を実行<br>
