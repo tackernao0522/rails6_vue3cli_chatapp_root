@@ -324,3 +324,154 @@ export default {
 };
 </script>
 ```
+
+# 6-7 画面の切り替えをする
+
++ `front/src/views/WelcomePage.vue`を編集<br>
+
+```vue:WelcomePage.vue
+<template>
+  <div class="container welcome">
+    <p>ようこそ！</p>
+    // ここから編集
+    <div v-if="shouldShowLoginForm">
+      <login-form />
+    </div>
+    <div v-if="!shouldShowLoginForm">
+      <signup-form />
+    </div>
+    // ここまで
+  </div>
+</template>
+
+<script>
+import LoginForm from "../components/LoginForm.vue";
+import SignupForm from "../components/SignupForm.vue";
+export default {
+  components: { LoginForm, SignupForm },
+  data() {
+    return {
+      shouldShowLoginForm: true,
+    };
+  },
+};
+</script>
+
+<style>
+.welcome {
+  text-align: center;
+  padding: 20px 0;
+}
+.welcome form {
+  width: 300px;
+  margin: 20px auto;
+}
+.welcome label {
+  display: block;
+  margin: 20px 0 10px;
+}
+.welcome input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px auto;
+  border-radius: 4px;
+  border: 1px solid #eee;
+  outline: none;
+  box-sizing: border-box;
+}
+.welcome span {
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.welcome button {
+  margin: 20px auto;
+}
+// 追加
+.change-form {
+  font-size: 14px;
+  margin: 10px;
+}
+// ここまで
+</style>
+```
+
+## `shouldShowLoginForm`を切り返すボタンを用意する
+
++ `front/src/views/WelcomePage.vue`を編集<br>
+
+```vue:WelcomePage.vue
+<template>
+  <div class="container welcome">
+    <p>ようこそ！</p>
+    <div v-if="shouldShowLoginForm">
+      <login-form />
+      // 追加
+      <p class="change-form">
+        初めての方は<span @click="shouldShowLoginForm = false">こちら</span
+        >をクリック
+      </p>
+      // ここまで
+    </div>
+    <div v-if="!shouldShowLoginForm">
+      <signup-form />
+      // 追加
+      <p class="change-form">
+        アカウントをお持ちの方は<span @click="shouldShowLoginForm = true"
+          >こちら</span
+        >をクリック
+      </p>
+      // ここまで
+    </div>
+  </div>
+</template>
+
+<script>
+import LoginForm from "../components/LoginForm.vue";
+import SignupForm from "../components/SignupForm.vue";
+export default {
+  components: { LoginForm, SignupForm },
+  data() {
+    return {
+      shouldShowLoginForm: true,
+    };
+  },
+};
+</script>
+
+<style>
+.welcome {
+  text-align: center;
+  padding: 20px 0;
+}
+.welcome form {
+  width: 300px;
+  margin: 20px auto;
+}
+.welcome label {
+  display: block;
+  margin: 20px 0 10px;
+}
+.welcome input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px auto;
+  border-radius: 4px;
+  border: 1px solid #eee;
+  outline: none;
+  box-sizing: border-box;
+}
+.welcome span {
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.welcome button {
+  margin: 20px auto;
+}
+.change-form {
+  font-size: 14px;
+  margin: 10px;
+}
+</style>
+```
