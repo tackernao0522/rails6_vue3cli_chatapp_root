@@ -147,3 +147,77 @@ class Auth::RegistrationsController < DeviseTokenAuth::RegistrationsController
   end
 end
 ```
+
+## エラー処理を実装する
+
++ `front/src/components/SignupForm.vue`を編集<br>
+
+```vue:SignupForm.vue
+<template>
+  <div>
+    <h2>アカウントを登録</h2>
+    <form @submit.prevent="signUp">
+      <input type="text" required placeholder="名前" v-model="name" />
+      <input
+        type="email"
+        required
+        placeholder="メールアドレス"
+        v-model="email"
+      />
+      <input
+        type="password"
+        required
+        placeholder="パスワード"
+        v-model="password"
+      />
+      <input
+        type="password"
+        required
+        placeholder="パスワード(確認用)"
+        v-model="passwordConfirmation"
+      />
+      <div class="error">{{ error }}</div>
+      <button>登録する</button>
+    </form>
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+export default {
+  data() {
+    return {
+      name: "",
+      email: "",
+      password: "",
+      passwordConfirmation: "",
+      // 追加
+      error: null,
+    };
+  },
+  methods: {
+    async signUp() {
+      // 追加
+      this.error = null;
+      try {
+        const res = await axios.post("http://localhost:3000/auth", {
+          name: this.name,
+          email: this.email,
+          password: this.password,
+          password_confirmation: this.passwordConfirmation,
+        });
+        // 追加
+        if (!res) {
+          throw new Error("アカウントを登録できませんでした");
+        }
+        console.log({ res });
+        return res;
+      } catch (error) {
+        this.error = "アカウントを登録できませんでした"; // 編集
+      }
+    },
+  },
+};
+</script>
+```
+
