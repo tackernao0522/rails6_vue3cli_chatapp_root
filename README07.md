@@ -132,3 +132,23 @@ VUE_APP_API_ORIGIN='http://localhost:3000'
 NODE_ENV='production'
 VUE_APP_API_ORIGIN='https://rails-vue3cli-api.herokuapp.com'
 ```
+
+# Front heroku.ymlの作成
+
++ `front $ touch heroku.yml`を実行<br>
+
++ `front/heroku.yml`を編集<br>
+
+```yml:heroku.yml
+setup:
+  config:
+    NODE_ENV: production
+build:
+  docker:
+    web: Dockerfile
+  config:
+    WORKDIR: app
+    API_URL: 'https://rails-vue3cli-api.herokuapp.com'
+run:
+  web: npm run build
+```
