@@ -96,3 +96,39 @@ class Auth::RegistrationsController < DeviseTokenAuth::RegistrationsController
   end
 end
 ```
+
+## Front Vue AxiosのbaseURLの設定(production, development)
+
++ `front mkdir src/api && touch $_/index.js`を実行<br>
+
++ `fonrt/src/api/index.js`を編集<br>
+
+```js:index.js
+import axios from "axios";
+
+export default () => {
+  console.log(process.env.VUE_APP_API_ORIGIN)
+  const instance1 = axios.create({
+    baseURL: `${process.env.VUE_APP_API_ORIGIN}`,
+  })
+  return instance1;
+};
+```
+
++ `front $ touch .env.development`を実行<br>
+
++ `front/.env.development`を編集<br>
+
+```:.env.development
+NODE_ENV='development'
+VUE_APP_API_ORIGIN='http://localhost:3000'
+```
+
++ `front $ touch .env.production`を実行<br>
+
++ `front/.env.production`を編集<br>
+
+```:.env.production
+NODE_ENV='production'
+VUE_APP_API_ORIGIN='https://rails-vue3cli-api.herokuapp.com'
+```
