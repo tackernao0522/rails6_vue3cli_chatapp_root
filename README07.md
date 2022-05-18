@@ -152,3 +152,44 @@ build:
 run:
   web: npm run build
 ```
+
++ frontディレクトリを git commitしておく<br>
+
+## Vue.js(font)をHerokuにアプリを作成しプロジェクトをPushする (デプロイ編)
+
++ `front $ heroku create rails-vue3cli-front --maniset`を実行<br>
+
++ `font $ heroku stack`を実行して container になっているか確認<br>
+
+```:terminal
+=== ⬢ rails-vue3cli-front Available Stacks
+* container
+  heroku-18
+  heroku-20
+```
+
++ `front $ heroku config`を実行して環境変数を確認<br>
+
+```:terminal
+=== rails-vue3cli-front Config Vars
+NODE_ENV: production
+```
+
++ `front $ git push heroku main`を実行<br>
+
++ `root $ cd api`を実行<br>
+
++ `api heroku config:set API_DOMAIN=rails-vue3cli-front.herokuapp.com`を実行<br>
+
++ `api heroku config`を実行して確認<br>
+
+```:terminal
+=== rails-vue3cli-api Config Vars
+API_DOMAIN:               rails-vue3cli-front.herokuapp.com
+DATABASE_URL:             postgres://lkcemzvldthfud:bf294aed21561cfe6041e52a76a33c00f69c7aefee890efdd544e46e121584c9@ec2-54-86-224-85.compute-1.amazonaws.com:5432/daon5gds3o4te4
+RACK_ENV:                 production
+RAILS_ENV:                production
+RAILS_LOG_TO_STDOUT:      enabled
+RAILS_MASTER_KEY:         dbd7ff5441b828998b19239769b0f033
+RAILS_SERVE_STATIC_FILES: enabled
+```
