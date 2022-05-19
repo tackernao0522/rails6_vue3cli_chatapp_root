@@ -193,3 +193,121 @@ RAILS_LOG_TO_STDOUT:      enabled
 RAILS_MASTER_KEY:         dbd7ff5441b828998b19239769b0f033
 RAILS_SERVE_STATIC_FILES: enabled
 ```
+
+## Herokuへデプロイするための最終設定
+
++ `root $ docker compose run --rm front npm install express`を実行<br>
+
++ `front/package.json`を編集<br>
+
+```josn:package.json
+{
+  "name": "app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "start": "node server.js" // 追加
+  },
+  "dependencies": {
+    "axios": "^0.27.2",
+    "core-js": "^3.6.5",
+    "express": "^4.18.1",
+    "vue": "^3.0.0",
+    "vue-axios": "^3.4.1",
+    "vue-router": "^4.0.0-0"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-babel": "~4.5.13",
+    "@vue/cli-plugin-eslint": "~4.5.13",
+    "@vue/cli-plugin-router": "~4.5.13",
+    "@vue/cli-service": "~4.5.13",
+    "@vue/compiler-sfc": "^3.0.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.7.2",
+    "eslint-plugin-vue": "^7.0.0"
+  }
+}
+```
+
++ `front/Dockerfile`を修正<br>
+
+```:Dockerfile
+# FROM node:14.4.0-alpine 使用不可
+FROM node:16.13.1-alpine
+
+ARG WORKDIR
+ARG API_URL
+
+ENV HOME=/${WORKDIR} \
+  LANG=C.UTF-8 \
+  TZ=Asia/Tokyo \
+  # これを指定しないとブラウザからhttp://localhost へアクセスすることができない。
+  # コンテナのNuxt.jsをブラウザから参照するためにip:0.0.0.0に紐付ける
+  # https://ja.nuxtjs.org/faq/host-port/
+  HOST=0.0.0.0 \
+  API_URL=${VUE_APP_API_ORIGIN}
+
+WORKDIR ${HOME}
+
+# ローカル上のpackageをコンテナにコピーしてインストールする
+RUN apk update && npm install -g @vue/cli@4.5.13
+COPY package*.json ./
+RUN npm install
+
+# コンテナにNuxtプロジェクトをコピー
+
+COPY . ./
+
+# 本番環境にアプリを構築
+# RUN npm run build // 削除
+
+# CMD ["-g", "daemon off;"]
+```
+
++ `front/heroku.yml`を修正<br>
+
+```yml:heroku.yml
+setup:
+  config:
+    NODE_ENV: production
+build:
+  docker:
+    web: Dockerfile
+  config:
+    WORKDIR: app
+    API_URL: "https://rails-vue3cli-api.herokuapp.com"
+run:
+  web: npm run build && npm run start # 編集
+```
+
++ `front $ touch server.js`を実行<br>
+
++ `front/server.js`を編集<br>
+
+```js:server.js
+const express = require('express');
+const port = process.env.PORT || 3000;
+const app = express();
+app.use(express.static(__dirname + "/dist/"));
+app.listen(port);
+```
+
++ `front/src/api/index.js`を編集<br>
+
+```js:index.js
+import axios from "axios";
+
+export default () => {
+  // eslint-disable-next-line no-console
+  console.log(process.env.VUE_APP_API_ORIGIN)
+  const API_URL = axios.create({
+    baseURL: `${process.env.VUE_APP_API_ORIGIN}`,
+  })
+  return API_URL;
+};
+```
+
+これでHerokuにデプロイできるはず<br>
