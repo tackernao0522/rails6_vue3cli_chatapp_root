@@ -349,11 +349,11 @@ export default {
         }
 
         if (!this.error) {
+          // 追加
           window.localStorage.setItem(
             "access-token",
-            res.headers["accsess-token"]
+            res.headers["access-token"]
           );
-          // 追加
           window.localStorage.setItem("client", res.headers.client);
           window.localStorage.setItem("uid", res.headers.uid);
           window.localStorage.setItem("name", res.data.data.name);
@@ -373,3 +373,173 @@ export default {
 ```
 
 + サインアップして試してみる<br>
+
+## 7-3 共通メソッドを管理する
+
++ `front $ mkdir src/auth && touch $_/setItem.js`を実行<br>
+
++ `front/src/auth/setItem.js`を編集<br>
+
+```js:setItem.js
+const setItem = (headers, name) => {
+  window.localStorage.setItem('access-token', headers['access-token'])
+  window.localStorage.setItem('client', headers.client)
+  window.localStorage.setItem('uid', headers.uid)
+  window.localStorage.setItem('name', name)
+}
+
+export default setItem
+```
+
++ `front/view/LoginForm.vue`を編集<br>
+
+```vue:LoginForm.vue
+<template>
+  <div>
+    <h2>ログイン</h2>
+    <form @submit.prevent="login">
+      <input
+        type="email"
+        required
+        placeholder="メールアドレス"
+        v-model="email"
+      />
+      <input
+        type="password"
+        required
+        placeholder="パスワード"
+        v-model="password"
+      />
+      <div class="error">{{ error }}</div>
+      <button>ログインする</button>
+    </form>
+  </div>
+</template>
+
+<script>
+import axios from "../api/index";
+import setItem from "../auth/setItem";
+
+export default {
+  emits: ["redirectToChatRoom"],
+  data() {
+    return {
+      email: "",
+      password: "",
+      error: null,
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        this.error = null;
+
+        const res = await axios().post("/auth/sign_in", {
+          email: this.email,
+          password: this.password,
+        });
+
+        if (!res) {
+          throw new Error("メールアドレスかパスワードが違います");
+        }
+
+        if (!this.error) {
+          setItem(res.headers, res.data.data.name) // 編集
+          this.$emit("redirectToChatRoom");
+        }
+
+        // eslint-disable-next-line no-console
+        console.log({ res });
+
+        return res;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log({ error });
+        this.error = "メールアドレスかパスワードが違います";
+      }
+    },
+  },
+};
+</script>
+```
+
++ `front/src/view/SignupForm.vue`を編集<br>
+
+```vue:SignupForm.vue
+<template>
+  <div>
+    <h2>アカウントを登録</h2>
+    <form @submit.prevent="signUp">
+      <input type="text" required placeholder="名前" v-model="name" />
+      <input
+        type="email"
+        required
+        placeholder="メールアドレス"
+        v-model="email"
+      />
+      <input
+        type="password"
+        required
+        placeholder="パスワード"
+        v-model="password"
+      />
+      <input
+        type="password"
+        required
+        placeholder="パスワード(確認用)"
+        v-model="passwordConfirmation"
+      />
+      <div class="error">{{ error }}</div>
+      <button>登録する</button>
+    </form>
+  </div>
+</template>
+
+<script>
+import axios from "../api/index";
+import setItem from "../auth/setItem";
+
+export default {
+  emits: ["redirectToChatRoom"],
+  data() {
+    return {
+      name: "",
+      email: "",
+      password: "",
+      passwordConfirmation: "",
+      error: null,
+    };
+  },
+  methods: {
+    async signUp() {
+      this.error = null;
+      try {
+        const res = await axios().post("/auth", {
+          name: this.name,
+          email: this.email,
+          password: this.password,
+          password_confirmation: this.passwordConfirmation,
+        });
+        if (!res) {
+          throw new Error("アカウントを登録できませんでした");
+        }
+
+        if (!this.error) {
+          window.localStorage.setItem(
+            "access-token",
+            res.headers["access-token"]
+          );
+          setItem(res.headers, res.data.data.name);
+          this.$emit("redirectToChatRoom");
+        }
+        // eslint-disable-next-line no-console
+        console.log({ res });
+        return res;
+      } catch (error) {
+        this.error = "アカウントを登録できませんでした";
+      }
+    },
+  },
+};
+</script>
+```
