@@ -311,3 +311,281 @@ export default () => {
 ```
 
 これでHerokuにデプロイできるはず<br>
+
+
+## 6-10 ページ遷移の処理を追加する
+
++ `fornt $ touch src/views/Chatroom.vue`を編集<br>
+
+```vue:Chatroom.vue
+<template>
+  <div>チャットルームです</div>
+</template>
+
+<script>
+export default {};
+</script>
+
+<style scoped>
+</style>
+```
+
++ `front/src/views/index.js`を編集<br>
+
+```js:index.js
+import { createRouter, createWebHistory } from 'vue-router'
+import WelcomePage from '../views/WelcomePage'
+import Chatroom from '../views/Chatroom'
+
+const routes = [
+  {
+    path: '/',
+    name: 'WelcomePage',
+    component: WelcomePage
+  },
+  {
+    path: '/chatroom',
+    name: 'Chatroom',
+    component: Chatroom
+  }
+]
+
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
+  routes
+})
+
+export default router
+```
+
++ localhost:8080/chatroom にアクセスしてみる<br>
+
+# Welcome.vueにリダイレクト処理を追加する
+
++ `front/views/WelcomePage.vue`を編集<br>
+
+```vue:WelcomePage.vue
+<template>
+  <div class="container welcome">
+    <p>ようこそ!</p>
+    <div v-if="shouldShowLoginForm">
+      <login-form @redirectToChatRoom="redirectToChatRoom" />  // 編集
+      <p class="change-form">
+        初めての方は<span @click="shouldShowLoginForm = false">こちら</span
+        >をクリック
+      </p>
+    </div>
+    <div v-if="!shouldShowLoginForm">
+      <signup-form @rredirectTohatRoom="redirectTohatRoom" /> // 編集
+      <p class="change-form">
+        アカウントをお持ちの方は<span @click="shouldShowLoginForm = true"
+          >こちら</span
+        >をクリック
+      </p>
+    </div>
+  </div>
+</template>
+
+<script>
+import LoginForm from "../components/LoginForm.vue";
+import SignupForm from "../components/SignupForm.vue";
+export default {
+  components: { LoginForm, SignupForm },
+  data() {
+    return {
+      shouldShowLoginForm: true,
+    };
+  },
+  // 追加
+  methods: {
+    redirectTohatRoom() {
+      this.$router.push({ name: "Chatroom" });
+    },
+  },
+  // ここまで
+};
+</script>
+
+<style>
+.welcome {
+  text-align: center;
+  padding: 20px 0;
+}
+.welcome form {
+  width: 300px;
+  margin: 20px auto;
+}
+.welcome label {
+  display: block;
+  margin: 20px 0 10px;
+}
+.welcome input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px auto;
+  border-radius: 4px;
+  border: 1px solid #eee;
+  outline: none;
+  box-sizing: border-box;
+}
+.welcome span {
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.welcome button {
+  margin: 20px auto;
+}
+</style>
+```
+
+## SignupForm.vueにリダイレクト処理を追加する
+
++ `front/src/components/SignupForm.vue`を編集<br>
+
+```vue:SignupForm.vue
+<template>
+  <div>
+    <h2>アカウントを登録</h2>
+    <form @submit.prevent="signUp">
+      <input type="text" required placeholder="名前" v-model="name" />
+      <input
+        type="email"
+        required
+        placeholder="メールアドレス"
+        v-model="email"
+      />
+      <input
+        type="password"
+        required
+        placeholder="パスワード"
+        v-model="password"
+      />
+      <input
+        type="password"
+        required
+        placeholder="パスワード(確認用)"
+        v-model="passwordConfirmation"
+      />
+      <div class="error">{{ error }}</div>
+      <button>登録する</button>
+    </form>
+  </div>
+</template>
+
+<script>
+import axios from "../api/index";
+export default {
+  emits: ["redirectToChatRoom"], // 親のメソッドを実行するため
+  data() {
+    return {
+      name: "",
+      email: "",
+      password: "",
+      passwordConfirmation: "",
+      error: null,
+    };
+  },
+  methods: {
+    async signUp() {
+      this.error = null;
+      try {
+        const res = await axios().post("/auth", {
+          name: this.name,
+          email: this.email,
+          password: this.password,
+          password_confirmation: this.passwordConfirmation,
+        });
+        if (!res) {
+          throw new Error("アカウントを登録できませんでした");
+        }
+
+        if (!this.error) {
+          this.$emit("redirectToChatRoom"); // 親のメソッドを実行
+        }
+        // eslint-disable-next-line no-console
+        console.log({ res });
+        return res;
+      } catch (error) {
+        this.error = "アカウントを登録できませんでした";
+      }
+    },
+  },
+};
+</script>
+```
+
+## LoginForm.vue にリダイレクト処理を追加する
+
++ `front/src/components/LoginForm.vue`を編集<br>
+
+```vue:LoginForm.vue
+<template>
+  <div>
+    <h2>ログイン</h2>
+    <form @submit.prevent="login">
+      <input
+        type="email"
+        required
+        placeholder="メールアドレス"
+        v-model="email"
+      />
+      <input
+        type="password"
+        required
+        placeholder="パスワード"
+        v-model="password"
+      />
+      <div class="error">{{ error }}</div>
+      <button>ログインする</button>
+    </form>
+  </div>
+</template>
+
+<script>
+import axios from "../api/index";
+export default {
+  emits: ["redirectToChatRoom"], // 追加
+  data() {
+    return {
+      email: "",
+      password: "",
+      error: null,
+    };
+  },
+  methods: {
+    async login() {
+      try {
+        this.error = null;
+
+        const res = await axios().post("/auth/sign_in", {
+          email: this.email,
+          password: this.password,
+        });
+
+        if (!res) {
+          throw new Error("メールアドレスかパスワードが違います");
+        }
+
+        // 追加
+        if (!this.error) {
+          this.$emit("redirectToChatRoom");
+        }
+        // ここまで
+
+        // eslint-disable-next-line no-console
+        console.log({ res });
+
+        return res;
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log({ error });
+        this.error = "メールアドレスかパスワードが違います";
+      }
+    },
+  },
+};
+</script>
+```
+
++ テストしてみる<br>
