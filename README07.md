@@ -315,9 +315,11 @@ export default () => {
 
 ## 6-10 ページ遷移の処理を追加する
 
-+ `fornt $ touch src/views/Chatroom.vue`を編集<br>
++ `fornt $ touch src/views/ChatroomPage.vue`を実行<br>
 
-```vue:Chatroom.vue
++ `front/views/ChatroomPage`を編集<br>
+
+```vue:ChatroomPage.vue
 <template>
   <div>チャットルームです</div>
 </template>
@@ -335,7 +337,7 @@ export default {};
 ```js:index.js
 import { createRouter, createWebHistory } from 'vue-router'
 import WelcomePage from '../views/WelcomePage'
-import Chatroom from '../views/Chatroom'
+import ChatroomPage from '../views/ChatroomPage'
 
 const routes = [
   {
@@ -346,7 +348,7 @@ const routes = [
   {
     path: '/chatroom',
     name: 'Chatroom',
-    component: Chatroom
+    component: ChatroomPage
   }
 ]
 
@@ -369,7 +371,7 @@ export default router
   <div class="container welcome">
     <p>ようこそ!</p>
     <div v-if="shouldShowLoginForm">
-      <login-form @redirectToChatRoom="redirectToChatRoom" />  // 編集
+      <login-form @redirectToChatRoomPage="redirectToChatRoomPage" />  // 編集
       <p class="change-form">
         初めての方は<span @click="shouldShowLoginForm = false">こちら</span
         >をクリック
@@ -476,7 +478,7 @@ export default {
 <script>
 import axios from "../api/index";
 export default {
-  emits: ["redirectToChatRoom"], // 親のメソッドを実行するため
+  emits: ["redirectToChatRoomPage"], // 親のメソッドを実行するため
   data() {
     return {
       name: "",
@@ -501,7 +503,7 @@ export default {
         }
 
         if (!this.error) {
-          this.$emit("redirectToChatRoom"); // 親のメソッドを実行
+          this.$emit("redirectToChatRoomPage"); // 親のメソッドを実行
         }
         // eslint-disable-next-line no-console
         console.log({ res });
@@ -545,7 +547,7 @@ export default {
 <script>
 import axios from "../api/index";
 export default {
-  emits: ["redirectToChatRoom"], // 追加
+  emits: ["redirectToChatRoomPage"], // 追加
   data() {
     return {
       email: "",
@@ -569,7 +571,7 @@ export default {
 
         // 追加
         if (!this.error) {
-          this.$emit("redirectToChatRoom");
+          this.$emit("redirectToChatRoomPage");
         }
         // ここまで
 

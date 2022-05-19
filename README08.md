@@ -39,9 +39,9 @@ nav p.email {
 </style>
 ```
 
-+ `front/src/Chatroom.vue`を編集<br>
++ `front/src/ChatroomPage.vue`を編集<br>
 
-```vue:Chatroom.vue
+```vue:ChatroomPage.vue
 <template>
   <div class="container">
     <navbar />
@@ -92,7 +92,7 @@ export default {
 import axios from "../api/index";
 
 export default {
-  emits: ["redirectToChatRoom"],
+  emits: ["redirectToChatRoomPage"],
   data() {
     return {
       email: "",
@@ -117,7 +117,7 @@ export default {
         if (!this.error) {
           // eslint-disable-next-line no-console
           console.log({ res }); // 追加 (header情報が取得できることを確認する)
-          this.$emit("redirectToChatRoom");
+          this.$emit("redirectToChatRoomPage");
         }
 
         // eslint-disable-next-line no-console
@@ -184,7 +184,7 @@ uid: "takaki55730317@gmail.com"
 import axios from "../api/index";
 
 export default {
-  emits: ["redirectToChatRoom"],
+  emits: ["redirectToChatRoomPage"],
   data() {
     return {
       email: "",
@@ -216,7 +216,7 @@ export default {
           window.localStorage.setItem("uid", res.headers.uid);
           window.localStorage.setItem("name", res.data.data.name);
           // ここまで
-          this.$emit("redirectToChatRoom");
+          this.$emit("redirectToChatRoomPage");
         }
 
         // eslint-disable-next-line no-console
@@ -324,7 +324,7 @@ nav p.email {
 <script>
 import axios from "../api/index";
 export default {
-  emits: ["redirectToChatRoom"],
+  emits: ["redirectToChatRoomPage"],
   data() {
     return {
       name: "",
@@ -358,7 +358,7 @@ export default {
           window.localStorage.setItem("uid", res.headers.uid);
           window.localStorage.setItem("name", res.data.data.name);
           // ここまで
-          this.$emit("redirectToChatRoom");
+          this.$emit("redirectToChatRoomPage");
         }
         // eslint-disable-next-line no-console
         console.log({ res });
@@ -421,7 +421,7 @@ import axios from "../api/index";
 import setItem from "../auth/setItem";
 
 export default {
-  emits: ["redirectToChatRoom"],
+  emits: ["redirectToChatRoomPage"],
   data() {
     return {
       email: "",
@@ -445,7 +445,7 @@ export default {
 
         if (!this.error) {
           setItem(res.headers, res.data.data.name) // 編集
-          this.$emit("redirectToChatRoom");
+          this.$emit("redirectToChatRoomPage");
         }
 
         // eslint-disable-next-line no-console
@@ -500,7 +500,7 @@ import axios from "../api/index";
 import setItem from "../auth/setItem";
 
 export default {
-  emits: ["redirectToChatRoom"],
+  emits: ["redirectToChatRoomPage"],
   data() {
     return {
       name: "",
@@ -530,7 +530,7 @@ export default {
             res.headers["access-token"]
           );
           setItem(res.headers, res.data.data.name);
-          this.$emit("redirectToChatRoom");
+          this.$emit("redirectToChatRoomPage");
         }
         // eslint-disable-next-line no-console
         console.log({ res });
