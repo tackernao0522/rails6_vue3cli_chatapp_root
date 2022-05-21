@@ -441,7 +441,7 @@ const requireAuth = async (to, from, next) => {
   if (!uid || !client || !accessToken) {
     // eslint-disable-next-line no-console
     console.log('ログインしていません')
-    next({ name: 'Welcome' })
+    next({ name: 'WelcomePage' })
     return
   }
 
@@ -592,7 +592,7 @@ const requireAuth = async (to, from, next) => {
   if (!uid || !client || !accessToken) {
     // eslint-disable-next-line no-console
     console.log('ログインしていません')
-    next({ name: 'Welcome' })
+    next({ name: 'WelcomePage' })
     return
   }
 
@@ -705,7 +705,7 @@ const requireAuth = async (to, from, next) => {
   if (!uid || !client || !accessToken) {
     // eslint-disable-next-line no-console
     console.log('ログインしていません')
-    next({ name: 'Welcome' })
+    next({ name: 'WelcomePage' })
     return
   }
 
