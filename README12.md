@@ -1,0 +1,196 @@
+## 9-2 いいね取り消し機能を実装する
+
++ `front/src/components/ChatWindow.vue`を編集<br>
+
+```vue:ChatWindow.vue
+<template>
+  <div class="chat-window">
+    <div v-if="messages" class="messages">
+      <ul v-for="message in messages" :key="message.id">
+        <li
+          :class="{
+            received: message.email !== uid,
+            sent: message.email == uid,
+          }"
+        >
+          <span class="name">{{ message.name }}</span>
+          <div class="message" @dblclick="handleLike(message)"> // 編集
+            {{ message.content }}
+            <div v-if="message.likes.length" class="heart-container">
+              <font-awesome-icon icon="heart" class="heart" />
+              <span class="heart-count">{{ message.likes.length }}</span>
+            </div>
+          </div>
+          <span class="created-at">{{ message.created_at }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from "../api/index";
+
+export default {
+  emits: ["connectCable"],
+  props: ["messages"],
+  data() {
+    return {
+      uid: localStorage.getItem("uid"),
+    };
+  },
+  methods: {
+    // 追加
+    handleLike(message) {
+      for (let i = 0; i < message.likes.length; i++) {
+        const like = message.likes[i];
+        if (like.email === this.uid) {
+          this.deleteLike(like.id);
+          return;
+        }
+      }
+      this.createLike(message.id);
+    },
+    // ここまで
+    async createLike(messageId) {
+      try {
+        const res = await axios().post(
+          `/messages/${messageId}/likes`,
+          {},
+          {
+            headers: {
+              uid: this.uid,
+              "access-token": window.localStorage.getItem("access-token"),
+              client: window.localStorage.getItem("client"),
+            },
+          }
+        );
+
+        if (!res) {
+          new Error("いいねできませんでした");
+        }
+        this.$emit("connectCable");
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log(error);
+      }
+    },
+    // 追加
+    async deleteLike(likeId) {
+      try {
+        const res = await axios().delete(`/likes/${likeId}`, {
+          headers: {
+            uid: this.uid,
+            "access-token": window.localStorage.getItem("access-token"),
+            client: window.localStorage.getItem("client"),
+          },
+        });
+
+        if (!res) {
+          new Error("いいねを削除できませんでした");
+        }
+        this.$emit("connectCable");
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log(error);
+      }
+    },
+    // ここまで
+  },
+};
+</script>
+
+<style scoped>
+.chat-window {
+  background: white;
+  padding: 30px 20px;
+  border-bottom: 1px solid #eee;
+}
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+ul li {
+  display: inline-block;
+  clear: both;
+}
+.received .message {
+  background: #eee;
+  padding: 10px;
+  display: inline-block;
+  border-radius: 30px;
+  margin-bottom: 2px;
+  max-width: 400px;
+}
+.received {
+  float: left;
+}
+.sent {
+  float: right;
+}
+.sent .message {
+  background: #677bb4;
+  color: white;
+  padding: 10px;
+  display: inline-block;
+  border-radius: 30px;
+  margin-bottom: 2px;
+  max-width: 400px;
+}
+.name {
+  position: relative;
+  margin-right: 6px;
+  display: block;
+  font-size: 13px;
+}
+.created-at {
+  display: block;
+  color: #999;
+  font-size: 12px;
+  margin-bottom: 20px;
+  margin-left: 4px;
+}
+.messages {
+  max-height: 400px;
+  overflow: auto;
+}
+
+.message {
+  position: relative;
+}
+
+.heart-container {
+  background: white;
+  position: absolute;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 30px;
+  min-width: 25px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: rgb(245, 245, 245);
+  padding: 1px 2px;
+  z-index: 2;
+  bottom: -7px;
+  right: 0px;
+  font-size: 9px;
+}
+.heart {
+  color: rgb(236, 29, 29);
+}
+.heart-count {
+  color: rgb(20, 19, 19);
+}
+.received .message::selection {
+  background: #eee;
+}
+
+.sent .message::selection {
+  background: #677bb4;
+}
+</style>
+```
+
++ `いいね`したメッセージを再度ダブルクリックすると`いいね`が削除される<br>
